@@ -284,10 +284,10 @@ html[data-theme="dark"] .socials a{background:rgba(34,40,62,.8);border-color:rgb
     </div>
     <div class="metrics">
       <div class="glass metric reveal">
-        <div class="label">YouTube Subscribers</div>
-        <div class="value">412K</div>
-        <div class="delta">38M total views</div>
-      </div>
+  <div class="label">YouTube Subscribers</div>
+  <div class="value" id="ytSubCount">Loading…</div>
+  <div class="delta" id="ytViewCount">Fetching views…</div>
+</div>
       <div class="glass metric reveal">
         <div class="label">TikTok Followers</div>
         <div class="value">1.2M</div>
@@ -832,6 +832,40 @@ function frame(t) {
   if (!reduce) requestAnimationFrame(frame);
 }
 frame(0);
+  // ----- Live YouTube Subscriber & View Count Auto-Updater -----
+const YT_API_KEY = 'AIzaSyDj8JFV1qbSb9SdtGPuIIMJwSgT0ows_EU';
+const YT_CHANNEL_ID = 'UC54SGhHB3HRUvFbYEirk3iA';
+
+async function updateYouTubeStats() {
+  const subEl = document.getElementById('ytSubCount');
+  const viewEl = document.getElementById('ytViewCount');
+  if (!subEl || !YT_API_KEY || !YT_CHANNEL_ID) return;
+
+  const url = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${YT_CHANNEL_ID}&key=${YT_API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.items && data.items.length > 0) {
+      const stats = data.items[0].statistics;
+      
+      // Format number (e.g., 14500 -> 14.5K)
+      const formatNumber = num => {
+        if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (num >= 1e3) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
+        return num;
+      };
+
+      subEl.textContent = formatNumber(stats.subscriberCount);
+      viewEl.textContent = `${formatNumber(stats.viewCount)} total views`;
+    }
+  } catch (err) {
+    console.error('Failed to load YouTube statistics:', err);
+    subEl.textContent = 'Active'; // Safe fallback if offline
+  }
+}
+
+updateYouTubeStats();
 </script>
 </body>
 </html>
