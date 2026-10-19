@@ -911,6 +911,22 @@ async function updateAllSocialStats() {
 }
 
 updateAllSocialStats();
+  async function loadStats() {
+  try {
+    const res = await fetch(`./stats.json?v=${Date.now()}`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const format = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : n;
+
+    if (data.tiktok) document.getElementById('ttFollowerCount').textContent = format(data.tiktok.followers);
+    if (data.instagram) document.getElementById('igFollowerCount').textContent = format(data.instagram.followers);
+    if (data.facebook) document.getElementById('fbFollowerCount').textContent = format(data.facebook.followers);
+  } catch (e) {
+    console.error('Failed to load stats.json:', e);
+  }
+}
+loadStats();
 </script>
 </body>
 </html>
