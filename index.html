@@ -871,62 +871,6 @@ async function updateYouTubeStats() {
 }
 
 updateYouTubeStats();
-  // Helper to format numbers (e.g., 25400 -> 25.4K)
-const formatStat = num => {
-  if (num >= 1e6) return (num / 1e6).toFixed(1).replace(/\.0$/, '') + 'M';
-  if (num >= 1e3) return (num / 1e3).toFixed(1).replace(/\.0$/, '') + 'K';
-  return num || '—';
-};
-
-// Replace these with your exact handles
-const SOCIAL_CONFIG = {
-  tiktokUsername: 'whosemrjaytube',
-  instagramUsername: 'whosemrjay',
-  facebookPageId: '1255381387655967'
-};
-
-async function updateAllSocialStats() {
-  const ttEl = document.getElementById('ttFollowerCount');
-  const igEl = document.getElementById('igFollowerCount');
-  const fbEl = document.getElementById('fbFollowerCount');
-
-  // If using an automated stats.json file on your repo:
-  try {
-    const res = await fetch('./stats.json');
-    if (res.ok) {
-      const data = await res.json();
-      if (ttEl && data.tiktok) ttEl.textContent = formatStat(data.tiktok.followers);
-      if (igEl && data.instagram) igEl.textContent = formatStat(data.instagram.followers);
-      if (fbEl && data.facebook) fbEl.textContent = formatStat(data.facebook.followers);
-      return;
-    }
-  } catch (e) {
-    console.warn('Local stats.json not found, falling back to static/configured displays.');
-  }
-
-  // Fallbacks if third-party endpoints are offline or rate-limited:
-  if (ttEl && ttEl.textContent === 'Loading…') ttEl.textContent = 'Active';
-  if (igEl && igEl.textContent === 'Loading…') igEl.textContent = 'Growing';
-  if (fbEl && fbEl.textContent === 'Loading…') fbEl.textContent = 'Community';
-}
-
-updateAllSocialStats();
-  async function loadStats() {
-  try {
-    const res = await fetch(`./stats.json?v=${Date.now()}`);
-    if (!res.ok) return;
-    const data = await res.json();
-
-    const format = n => n >= 1e6 ? (n / 1e6).toFixed(1) + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1) + 'K' : n;
-
-    if (data.tiktok) document.getElementById('ttFollowerCount').textContent = format(data.tiktok.followers);
-    if (data.instagram) document.getElementById('igFollowerCount').textContent = format(data.instagram.followers);
-    if (data.facebook) document.getElementById('fbFollowerCount').textContent = format(data.facebook.followers);
-  } catch (e) {
-    console.error('Failed to load stats.json:', e);
-  }
-}
-loadStats();
 </script>
 </body>
 </html>
